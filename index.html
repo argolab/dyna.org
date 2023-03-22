@@ -1,8 +1,179 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title>Dyan -- Logic Programming for Machine Learning</title>
-</head>
-<body>
-<a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">Papers about Dyna</a>
-</body>
+  <head>
+  <title>Dyan -- Logic Programming for Machine Learning</title>
+  <style>
+        @media (min-width: 970px) {
+        body {
+            width:960px;
+            margin:auto;
+            background-color: #002D72;
+        }
+        #content {
+            background-color:#fff;
+            padding: 10px;
+        }
+        #forkongithub a{background:#c00;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#c11;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}
+    }
+    @media (max-width: 970px) {
+        #forkongithub { display: none; }
+    }
+    body {
+        font: 13px/1.5 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+    a:link {
+        color: #418FDE;
+    }
+    a:visited {
+        color: #76232F;
+    }
+    #header {
+        text-align: center;
+        padding: 20px;
+        font-size: 60px;
+        font-weight: 900;
+    }
+    #subheader {
+        font-size: 15px;
+    }
+    #navbar {
+        overflow: hidden;
+        height: 50px;
+    }
+
+    #navitems {
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, 0);
+    }
+
+    .navbar a {
+        float: left;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 15px;
+    }
+
+    pre {
+        background-color: #EBEBD2;
+    }
+    pre code { padding: 0px; }
+  </style>
+  </head>
+  <body>
+    <div id="content">
+      <div id="header">
+        Dyna <img src="simple-logo.png" />
+        <div id="subheader">
+          A Weighted, Declarative, Logic Programming Language
+        </div>
+      </div>
+      <div id="navbar" class="navbar">
+        <div id="navitems">
+          <a href="#about-language">About the Language</a>
+          <a href="#research">Research Projects</a>
+          <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">Research Papers</a>
+          <a href="#downloads">Downloads</a>
+        </div>
+      </div>
+
+
+
+      <a name="about-language"></a>
+      <h2>About the Dyna Programming Language</h2>
+
+      <p>Dyna is a programming language designed for machine learning search</p>
+
+<pre><code>Same code 1
+code 2
+</code></pre>
+
+      <a name="history"></a>
+      <h3>History of the Dyna Project</h3>
+
+      <p>
+        The Dyna project was originally started in 2004 as an umbrella project to make
+        a programming language for Machine Learning (ML) researchers.  Most algorithms
+        that ML researchers implement are expressible in a few lines of math.  In the
+        processes of researching new algorithms, researchers often have to iterate many
+        times.  This means that they revise the mathematical concept of their algorithm,
+        and then recode their program to match.  The Dyna project hopes to help this
+        process by reducing the distance between mathematical concepts and executable
+        code.
+      </p>
+
+      <p>
+        The discrepancy between non-executable mathematical notation and executable
+        programs was the central motivation for the Dyna project and led to the
+        development of Dyna 1.0 (<a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2004">Paper 1</a>, <a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2005">Paper 2</a>)
+        Dyna 1.0 extended Datalog by replacing the boolean semiring used in logic programming to allow
+        the use of any semirings.  In other words, this meant that Dyna 1.0 was a
+        notation for expressing and running <i>dynamic programs</i>.  As such, Dyna 1.0
+        was successfully used in a number of research papers.
+      </p>
+
+      <p>
+        On the heels of Dyna 1.0 success, Dyna 2.0 was proposed to rectify many
+        of the limitations of Dyna 1.0 (<a href="https://www.cs.jhu.edu/~jason/papers/#eisner-filardo-2011">Paper</a>).  Dyna 1.0 requires
+        everything use the same semiring, Dyna 2.0 removes this restriction,
+        instead it has functions.  Dyna 1.0 is a dialect of Datalog, and as
+        such, requires all terms to only contain ground values.  This allowed
+        the Dyna 1.0 compiler to generate programs which loop over the entire
+        domain of an expression---much like a scan of a database table.
+        Dyna 2.0 has no such restriction.  Instead, Dyna 2.0 allows for
+        variables in the program to remain <i>free</i>.  Dyna 2.0 performs
+        unification similar to Prolog where expressions like
+        <code>a(X)=a(Y)</code> unifies <code>X</code> and <code>Y</code>
+        together without knowing the value of <code>X</code> or <code>Y</code>.
+        Dyna 2.0 also supports both <i>lazy</i> expression allowing for
+        expressions like <code>X+Y=Z</code> to remain "<i>unevaluated</i>".
+        Dyna 2.0 can also <i>eagerly</i> compute and memoize any expression to
+        avoid recomputing the same expression many times.  Dyna 2.0 also
+        introduced a prototype-based inheritance (dynabases) which is useful for
+        building larger programs.
+      </p>
+
+
+
+      <a name="research"></a>
+      <h2>Ongoing Research about Dyna</h2>
+
+      <ul>
+        <li><b>Relational Algebra and Term Rewriting to build a Flexible, Complete Implementation</b> &mdash;</li>
+        <li><b>Reinforcement Learning used to find an Optimal Execution Strategy</b> &mdash; </li>
+      </ul>
+
+      <h3>Past research</h3>
+      <p>A complete list of research papers published about Dyna can be found <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">here</a>.</p>
+
+      <ul>
+        <li></li>
+        <li></li>
+      </ul>
+
+
+      <a name="downloads"></a>
+      <h2>Downloads / Different Implementations of Dyna</h2>
+
+      <ul>
+        <li><b>Dyna3</b> &mdash; <i>Link coming soon.</i> A new implementation of the Dyna programming language written in Clojure.  This implementation is a redesign of Dyna-R to be faster and more feature complete.</li>
+        <li><a href="https://github.com/argolab/dyna-R"><b>Dyna-R</b></a> &mdash; An implementation of Dyna using Relational Expressions (<b>R</b>-exprs) in pure Python.  This implementation was the first implementation to successfully run many of our more complex Dyna 2 programs from the Dyna 2 <a href="https://www.cs.jhu.edu/~jason/papers/#eisner-filardo-2011">paper</a>.  This implementation is known to run slow (it is an interpreter written in pure python).  </li>
+        <li><b>Dyna-Pi</b> &mdash;<i>Link coming soon.</i> An implementation of Dyna 1 (semiring programs only) to study using reinforcement learning to optimize a program's runtime.</li>
+        <li><b>Dyna-Phi</b> &mdash; An implementation of Dyna using the Truffle/Graal framework.</li>
+        <li><a href="https://github.com/nwf/dyna"><b>Dyna2</b></a> &mdash; An early attempt at implementing Dyna 2 written in Haskell and Python.  </li>
+        <li><b>Dyna1</b> &mdash; The original implementation the Dyna programming language.  This implementation was only supports single semiring programs, see the section about <a href="#history">history</a> of Dyna above.  Download not avaliable.</li>
+      </ul>
+
+    </div>
+
+
+
+
+
+    <span id="forkongithub"><a href="https://github.com/argolab">Fork me on GitHub</a></span>
+  </body>
 </html>
