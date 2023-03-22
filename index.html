@@ -3,7 +3,7 @@
   <head>
   <title>Dyan -- Logic Programming for Machine Learning</title>
   <style>
-        @media (min-width: 970px) {
+    @media (min-width: 970px) {
         body {
             width:960px;
             margin:auto;
@@ -11,7 +11,7 @@
         }
         #content {
             background-color:#fff;
-            padding: 10px;
+            padding: 13px;
         }
         #forkongithub a{background:#c00;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#c11;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}
     }
@@ -20,6 +20,7 @@
     }
     body {
         font: 13px/1.5 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+        text-align: justify;
     }
     html {
         scroll-behavior: smooth;
@@ -35,7 +36,9 @@
         padding: 20px;
         font-size: 60px;
         font-weight: 900;
+        padding-top: 5px;
     }
+    #header img { height: 60px; }
     #subheader {
         font-size: 15px;
     }
@@ -48,6 +51,7 @@
         left: 50%;
         position: absolute;
         transform: translate(-50%, 0);
+        margin-right: -50%;
     }
 
     .navbar a {
@@ -63,11 +67,12 @@
     }
     pre code { padding: 0px; }
   </style>
+  <link rel="icon" type="image/x-icon" href="images/delta.svg">
   </head>
   <body>
     <div id="content">
       <div id="header">
-        Dyna <img src="simple-logo.png" />
+        Dyna <img src="images/simple-logo.svg"/>
         <div id="subheader">
           A Weighted, Declarative, Logic Programming Language
         </div>
@@ -82,54 +87,92 @@
       </div>
 
 
-
       <a name="about-language"></a>
       <h2>About the Dyna Programming Language</h2>
 
-      <p>Dyna is a programming language designed for machine learning search</p>
+      <p>Dyna is a programming language designed by and for machine learning
+        researchers.  Dyna builds on the paradigm of logic programming languages
+        such as Datalog and Prolog to allow for weighted rules.  However, Dyna
+        goes much further in that it allows for flexible execution orders and
+        for rules in the program to be "<i>weighted</i>".  This means that we
+        can efficiently express complicated programs in a few lines of code
+        without having to worry about <i>how</i> the program will execute and
+        only focus on <i>what</i> we want computed.  For example, we can write
+        our matrix multiplication in a single line of code, as well as the
+        <a href="https://en.wikipedia.org/wiki/Fibonacci_sequence">fibonacci
+        sequence</a>, <a href="https://en.wikipedia.org/wiki/CYK_algorithm">CKY
+        parsing</a>, and even an "infinite" neural network in a few lines of
+        code as shown below.
+      </p>
 
-<pre><code>Same code 1
-code 2
+<pre><code>% <b>Dyna rule for multiplying the matrix `a` and `b` together</b>
+c(I,K) += a(I,J) * b(J,K).
+
+% <b>The fibonacci sequence</b>
+fib(N) := fib(N-1) + fib(N-2).                                   % recursive step
+fib(0) := 0.                                                     % override recursive step for 0 and 1
+fib(1) := 1.
+
+% <b>CKY Parsing</b> <!--small>(<a href="https://en.wikipedia.org/wiki/CYK_algorithm">wikipedia article on this algorithm</a>)</small-->
+phrase(X,I,K) max= phrase(Y,I,J) * phrase(Z,J,K) * rule(X,Y,Z).  % binary CKY rule
+phrase(X,I,K) max= phrase(Y,I,K) * rule(X,Y).                    % uniary CKY rule
+phrase(X,I,I+1) max= rule(X, word(I)).                           % terminal rule
+
+
+% <b>A Neural Network defined in terms of edges</b>
+sigma(X) = 1/(1+exp(-X)).                                        % define sigmoid function
+out(J) = sigma(in(J)).                                           % apply sigmoid function
+in(J) += out(I) * edge(I,J).                                     % vector-matrix product
+loss += (out(J) - target(J))**2.                                 % L2 loss
+edge(input(X,Y),hidden(X+DX,Y+DY)) = weight(DX,DY).              % define edges in terms of weight matrix
+weight(DX,DY) := random(*,-1,1) for DX:-4..4, DY:-4..4.          % random initialization for matrix
+
+% <b>To see more example Dyna programs, please checkout our <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">research papers</a>.</b>
 </code></pre>
+
+
 
       <a name="history"></a>
       <h3>History of the Dyna Project</h3>
 
       <p>
-        The Dyna project was originally started in 2004 as an umbrella project to make
+        The Dyna project was initially started in 2004 as an umbrella project to make
         a programming language for Machine Learning (ML) researchers.  Most algorithms
         that ML researchers implement are expressible in a few lines of math.  In the
-        processes of researching new algorithms, researchers often have to iterate many
-        times.  This means that they revise the mathematical concept of their algorithm,
+        process of researching new algorithms, researchers often have to iterate many
+        times.  This means that they revise the mathematical concept of their algorithm
         and then recode their program to match.  The Dyna project hopes to help this
         process by reducing the distance between mathematical concepts and executable
         code.
       </p>
 
       <p>
-        The discrepancy between non-executable mathematical notation and executable
-        programs was the central motivation for the Dyna project and led to the
-        development of Dyna 1.0 (<a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2004">Paper 1</a>, <a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2005">Paper 2</a>)
-        Dyna 1.0 extended Datalog by replacing the boolean semiring used in logic programming to allow
-        the use of any semirings.  In other words, this meant that Dyna 1.0 was a
-        notation for expressing and running <i>dynamic programs</i>.  As such, Dyna 1.0
-        was successfully used in a number of research papers.
+        The discrepancy between non-executable mathematical notation and
+        executable programs was the central motivation for the Dyna project and
+        led to the development of Dyna 1.0
+        (<a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2004">Paper
+        1</a>, <a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2005">Paper
+        2</a>) Dyna 1.0 extended Datalog by replacing the boolean semiring used
+        in logic programming to allow any semiring.  In other words, this meant
+        that Dyna 1.0 was a notation for expressing and running <i>dynamic
+        programs</i>.  As such, Dyna 1.0 was successfully used in a number of
+        research papers.
       </p>
 
       <p>
         On the heels of Dyna 1.0 success, Dyna 2.0 was proposed to rectify many
         of the limitations of Dyna 1.0 (<a href="https://www.cs.jhu.edu/~jason/papers/#eisner-filardo-2011">Paper</a>).  Dyna 1.0 requires
-        everything use the same semiring, Dyna 2.0 removes this restriction,
-        instead it has functions.  Dyna 1.0 is a dialect of Datalog, and as
+        everything to use the same semiring, Dyna 2.0 removes this restriction,
+        instead, it has functions.  Dyna 1.0 is a dialect of Datalog and as
         such, requires all terms to only contain ground values.  This allowed
-        the Dyna 1.0 compiler to generate programs which loop over the entire
+        the Dyna 1.0 compiler to generate programs that loop over the entire
         domain of an expression---much like a scan of a database table.
         Dyna 2.0 has no such restriction.  Instead, Dyna 2.0 allows for
         variables in the program to remain <i>free</i>.  Dyna 2.0 performs
-        unification similar to Prolog where expressions like
+        unification similar to Prolog, where expressions like
         <code>a(X)=a(Y)</code> unifies <code>X</code> and <code>Y</code>
         together without knowing the value of <code>X</code> or <code>Y</code>.
-        Dyna 2.0 also supports both <i>lazy</i> expression allowing for
+        Dyna 2.0 also supports both <i>lazy</i> expressions allowing for
         expressions like <code>X+Y=Z</code> to remain "<i>unevaluated</i>".
         Dyna 2.0 can also <i>eagerly</i> compute and memoize any expression to
         avoid recomputing the same expression many times.  Dyna 2.0 also
@@ -143,18 +186,32 @@ code 2
       <h2>Ongoing Research about Dyna</h2>
 
       <ul>
-        <li><b>Relational Algebra and Term Rewriting to build a Flexible, Complete Implementation</b> &mdash;</li>
-        <li><b>Reinforcement Learning used to find an Optimal Execution Strategy</b> &mdash; </li>
+        <li><b>Relational Algebra and Term Rewriting to build a Flexible,
+        Complete Implementation</b> &mdash; The execution of a Dyna program is
+        non-trivial and can not be implemented using the same techniques used to
+        implement Datalog and Prolog engines.  In this research, we are looking
+        into new ways in which declarative programming languages can be
+        implemented using term-rewriting on top of a relational algebra which
+        can represent a Dyna program.
+        </li>
+        <li><b>Reinforcement Learning used to find an Optimal Execution
+        Strategy</b> &mdash; One of the major difference between Dyna compared to
+        other programming languages is that Dyna does not guarantee the order
+        in which expressions are evaluated.  This, in turn, provides us with
+        opportunities to "rearrange" to program to improve the program's
+        runtime.  In this work, we are investigating how reinforcement learning
+        and heuristic search strategies can be used to automatically make a
+        program more efficient.</li>
       </ul>
 
       <h3>Past research</h3>
       <p>A complete list of research papers published about Dyna can be found <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">here</a>.</p>
 
       <ul>
-        <li></li>
-        <li></li>
+        <li>Solvers for finite arithmetic circuits</li>
+        <li>Tree set automata representation for representation of Dyna Terms</li>
+        <li>Transformations of weighted semiring programs</li>
       </ul>
-
 
       <a name="downloads"></a>
       <h2>Downloads / Different Implementations of Dyna</h2>
@@ -162,17 +219,12 @@ code 2
       <ul>
         <li><b>Dyna3</b> &mdash; <i>Link coming soon.</i> A new implementation of the Dyna programming language written in Clojure.  This implementation is a redesign of Dyna-R to be faster and more feature complete.</li>
         <li><a href="https://github.com/argolab/dyna-R"><b>Dyna-R</b></a> &mdash; An implementation of Dyna using Relational Expressions (<b>R</b>-exprs) in pure Python.  This implementation was the first implementation to successfully run many of our more complex Dyna 2 programs from the Dyna 2 <a href="https://www.cs.jhu.edu/~jason/papers/#eisner-filardo-2011">paper</a>.  This implementation is known to run slow (it is an interpreter written in pure python).  </li>
-        <li><b>Dyna-Pi</b> &mdash;<i>Link coming soon.</i> An implementation of Dyna 1 (semiring programs only) to study using reinforcement learning to optimize a program's runtime.</li>
+        <li><b>Dyna-Pi</b> &mdash; <i>Link coming soon.</i> An implementation of Dyna 1 (semiring programs only) to study reinforcement learning ability to optimize a program's runtime through program transformations.  Written in Python.</li>
         <li><b>Dyna-Phi</b> &mdash; An implementation of Dyna using the Truffle/Graal framework.</li>
         <li><a href="https://github.com/nwf/dyna"><b>Dyna2</b></a> &mdash; An early attempt at implementing Dyna 2 written in Haskell and Python.  </li>
         <li><b>Dyna1</b> &mdash; The original implementation the Dyna programming language.  This implementation was only supports single semiring programs, see the section about <a href="#history">history</a> of Dyna above.  Download not avaliable.</li>
       </ul>
-
     </div>
-
-
-
-
 
     <span id="forkongithub"><a href="https://github.com/argolab">Fork me on GitHub</a></span>
   </body>
