@@ -61,11 +61,15 @@
         text-decoration: none;
         font-size: 15px;
     }
-
     pre {
         background-color: #EBEBD2;
     }
     pre code { padding: 0px; }
+    .papers a {
+        font-weight: bold;
+        color: #000;
+        text-decoration: underline;
+    }
   </style>
   <link rel="icon" type="image/x-icon" href="images/delta.svg">
   </head>
@@ -81,7 +85,7 @@
         <div id="navitems">
           <a href="#about-language">About the Language</a>
           <a href="#research">Research Projects</a>
-          <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">Research Papers</a>
+          <a href="#research-papers">Research Papers</a>
           <a href="#downloads">Downloads</a>
         </div>
       </div>
@@ -113,7 +117,7 @@ fib(N) := fib(N-1) + fib(N-2).                                   % recursive ste
 fib(0) := 0.                                                     % override recursive step for 0 and 1
 fib(1) := 1.
 
-% <b>CKY Parsing</b> <!--small>(<a href="https://en.wikipedia.org/wiki/CYK_algorithm">wikipedia article on this algorithm</a>)</small-->
+% <b>CKY Parsing</b>
 phrase(X,I,K) max= phrase(Y,I,J) * phrase(Z,J,K) * rule(X,Y,Z).  % binary CKY rule
 phrase(X,I,K) max= phrase(Y,I,K) * rule(X,Y).                    % uniary CKY rule
 phrase(X,I,I+1) max= rule(X, word(I)).                           % terminal rule
@@ -127,7 +131,7 @@ loss += (out(J) - target(J))**2.                                 % L2 loss
 edge(input(X,Y),hidden(X+DX,Y+DY)) = weight(DX,DY).              % define edges in terms of weight matrix
 weight(DX,DY) := random(*,-1,1) for DX:-4..4, DY:-4..4.          % random initialization for matrix
 
-% <b>To see more example Dyna programs, please checkout our <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">research papers</a>.</b>
+% <b>To see more example Dyna programs, please checkout our <a href="#research-papers">research papers</a>.</b>
 </code></pre>
 
 
@@ -204,14 +208,23 @@ weight(DX,DY) := random(*,-1,1) for DX:-4..4, DY:-4..4.          % random initia
         program more efficient.</li>
       </ul>
 
-      <h3>Past research</h3>
-      <p>A complete list of research papers published about Dyna can be found <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">here</a>.</p>
+      <a name="research-papers"></a>
+      <h3>Select Published Research Papers</h3>
 
-      <ul>
-        <li>Solvers for finite arithmetic circuits</li>
-        <li>Tree set automata representation for representation of Dyna Terms</li>
-        <li>Transformations of weighted semiring programs</li>
+      <ul class="papers">
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#vieira-et-al-2021-emnlp">Searching for more efficient dynamic programs.</a> Tim Vieira, Ryan Cotterell, and Jason Eisner <i>In Findings of EMNLP (2021).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#francislandau-vieira-eisner-2020-wrla">Evaluation of logic programs with built-ins and aggregation: A calculus for bag relations.</a> Matthew Francis-Landau, Tim Vieira, and Jason Eisner <i>In WRLA (2020).</i></li>
+        <li><a href="https://www.ietfng.org/nwf/publications-and-talks/2017-thesis.html">Dyna 2: Towards a General Weighted Logic Language.</a> Nathaniel Wesley Filardo <i>PhD thesis, Johns Hopkins University (2017).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#vieira-et-al-2017">Dyna: Toward a self-optimizing declarative language for machine learning applications.</a> Tim Vieira, Matthew Francis-Landau, Nathaniel Wesley Filardo, Farzad Khorasani, and Jason Eisner <i>In Workshop on Machine Learning and Programming Languages (2017)</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#filardo-eisner-2016-ttatt">Rigid tree automata with isolation.</a> Nathaniel Wesley Filardo and Jason Eisner <i>In TTATT (2016).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#filardo-eisner-2012-iclp">A flexible solver for finite arithmetic circuits.</a> Nathaniel Wesley Filardo and Jason Eisner <i>In ICLP (2012).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#eisner-filardo-2011">Dyna: Extending Datalog for modern AI.</a> Jason Eisner and Nathaniel W. Filardo <i>In Datalog Reloaded (2011).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#eisner-blatz-2007">Program transformations for optimization of parsing algorithms and other weighted logic programs.</a> Jason Eisner and John Blatz <i>In Conference on Formal Grammar (2007).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2005">Compiling comp ling: Weighted dynamic programming and the Dyna language.</a> Jason Eisner, Eric Goldlust, and Noah A. Smith <i>In HLT-EMNLP (2005).</i></li>
+        <li><a href="https://www.cs.jhu.edu/~jason/papers/#eisner-goldlust-smith-2004">Dyna: A declarative language for implementing dynamic programs.</a> Jason Eisner, Eric Goldlust, and Noah A. Smith <i>In ACL (2004).</i></li>
       </ul>
+
+      <p>Additional talks about Dyna can be found <a href="https://www.cs.jhu.edu/~jason/papers/#Dyna">here</a>.</p>
 
       <a name="downloads"></a>
       <h2>Downloads / Different Implementations of Dyna</h2>
