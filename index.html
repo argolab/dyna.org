@@ -3,7 +3,7 @@
   <head>
   <title>Dyna &mdash; Logic Programming for Machine Learning</title>
   <style>
-    @media (min-width: 970px) {
+    @media (min-width: 965px) {
         body {
             width:960px;
             margin:auto;
@@ -13,13 +13,15 @@
             background-color:#fff;
             padding: 13px;
         }
+    }
+    @media (min-width: 1060px) {
         #forkongithub a{background:#c00;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#c11;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}
     }
-    @media (max-width: 970px) {
+    @media (max-width: 1060px) {
         #forkongithub { display: none; }
     }
     body {
-        font: 13px/1.5 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+        font: 14px/1.5 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
         text-align: justify;
         line-height: 1.4;
     }
@@ -98,13 +100,13 @@
 
       <p>Dyna is a programming language designed by and for machine learning
         researchers.  Dyna builds on the paradigm of logic programming languages
-        such as Datalog and Prolog to allow for weighted rules.  However, Dyna
-        goes much further in that it allows for flexible execution orders and
-        for rules in the program to be "<i>weighted</i>".  This means that we
-        can efficiently express complicated programs in a few lines of code
-        without having to worry about <i>how</i> the program will execute and
-        only focus on <i>what</i> we want computed.  For example, we can write
-        our matrix multiplication in a single line of code, as well as the
+        such as Datalog and Prolog.  However, Dyna goes much further in that it
+        allows for <i>flexible execution orders</i> and for rules in the program
+        to be "<i>weighted</i>".  This means that we can efficiently express
+        complicated programs in a few lines of code without having to worry
+        about <i>how</i> the program will execute and only focus on <i>what</i>
+        we want computed.  For example, we can write our matrix multiplication
+        in a single line of code, as well as the
         <a href="https://en.wikipedia.org/wiki/Fibonacci_sequence">fibonacci
         sequence</a>, <a href="https://en.wikipedia.org/wiki/CYK_algorithm">CKY
         parsing</a>, and even an "infinite" neural network in a few lines of
@@ -131,7 +133,7 @@ out(J) = sigma(in(J)).                                           % apply sigmoid
 in(J) += out(I) * edge(I,J).                                     % vector-matrix product
 loss += (out(J) - target(J))**2.                                 % L2 loss
 edge(input(X,Y),hidden(X+DX,Y+DY)) = weight(DX,DY).              % define edges in terms of weight matrix
-weight(DX,DY) := random(*,-1,1) for DX:-4..4, DY:-4..4.          % random initialization for matrix
+weight(DX,DY) := random(-1,1) for DX:-4..4, DY:-4..4.            % random initialization for matrix
 
 % <b>To see more example Dyna programs, please checkout our <a href="#research-papers">research papers</a>.</b>
 </code></pre>
@@ -214,6 +216,7 @@ weight(DX,DY) := random(*,-1,1) for DX:-4..4, DY:-4..4.          % random initia
       <h3>Select Published Research Papers</h3>
 
       <ul class="papers">
+        <li><a href="https://timvieira.github.io/doc/2023-timv-dissertation.pdf">Automating the Analysis and Improvement of Dynamic Programming Algorithms with Applications to Natural Language Processing.</a> Tim Vieira <i>PhD thesis, Johns Hopkins University (2023).</i></li>
         <li><a href="https://www.cs.jhu.edu/~jason/papers/#vieira-et-al-2021-emnlp">Searching for more efficient dynamic programs.</a> Tim Vieira, Ryan Cotterell, and Jason Eisner <i>In Findings of EMNLP (2021).</i></li>
         <li><a href="https://www.cs.jhu.edu/~jason/papers/#francislandau-vieira-eisner-2020-wrla">Evaluation of logic programs with built-ins and aggregation: A calculus for bag relations.</a> Matthew Francis-Landau, Tim Vieira, and Jason Eisner <i>In WRLA (2020).</i></li>
         <li><a href="https://www.ietfng.org/nwf/publications-and-talks/2017-thesis.html">Dyna 2: Towards a General Weighted Logic Language.</a> Nathaniel Wesley Filardo <i>PhD thesis, Johns Hopkins University (2017).</i></li>
@@ -234,9 +237,9 @@ weight(DX,DY) := random(*,-1,1) for DX:-4..4, DY:-4..4.          % random initia
       <ul>
         <li><b>Dyna3</b> &mdash; <i>Link coming soon.</i> A new implementation of the Dyna programming language written in Clojure.  This implementation is a redesign of Dyna-R to be faster and more feature complete.</li>
         <li><a href="https://github.com/argolab/dyna-R"><b>Dyna-R</b></a> &mdash; An implementation of Dyna using Relational Expressions (<b>R</b>-exprs).  This implementation was the first implementation to successfully run many of our more complex Dyna 2 programs from the Dyna 2 <a href="https://www.cs.jhu.edu/~jason/papers/#eisner-filardo-2011">paper</a>.  This implementation is known to run slow (it is an interpreter written in pure python).  </li>
-        <li><b>Dyna-Pi</b> &mdash; <i>Link coming soon.</i> An implementation of Dyna 1 (semiring programs only) to study reinforcement learning ability to optimize a program's runtime through program transformations.  Written in Python.</li>
+        <li><a href="https://github.com/timvieira/dyna-pi"><b>Dyna-Pi</b></a> &mdash; An implementation of Dyna 1 (semiring programs only) to study reinforcement learning ability to optimize a program's runtime through program transformations.  Written in Python.</li>
         <li><b>Dyna-Phi</b> &mdash; An implementation of Dyna using the Truffle/Graal framework.</li>
-        <li><a href="https://github.com/nwf/dyna"><b>Dyna2</b></a> &mdash; An early attempt at implementing Dyna 2 written in Haskell and Python.  </li>
+        <li><a href="https://github.com/nwf/dyna"><b>Dyna2</b></a> &mdash; An early attempt at implementing Dyna 2 written in Haskell and Python.</li>
         <li><b>Dyna1</b> &mdash; The original implementation the Dyna programming language.  This implementation only supports single semiring programs, see the section about <a href="#history">history</a> of Dyna above.  Download not available.</li>
       </ul>
     </div>
