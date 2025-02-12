@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive REPL for the Dyna programming language</title>
+    <link rel="icon" type="image/x-icon" href="../images/delta.svg">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        #output-area {
+            flex: 9;
+            background-color: #1e1e1e;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .command-entry {
+            margin: 10px 0;
+        }
+
+        .command-input {
+            color: #64dd17;
+            white-space: pre-wrap;
+        }
+
+        .command-output {
+            color: #e0e0e0;
+            white-space: pre-wrap;
+        }
+
+        #input-container {
+            flex: 3;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        #command-input {
+            width: 100%;
+            height: 50px;
+            background-color: #1e1e1e;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        #error-message {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            color: #ff5252;
+            font-size: 14px;
+            display: none;
+        }
+
+        #run-button {
+            display: block;
+            margin: 10px 0 0 auto;
+            background-color: #404040;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        #run-button:hover {
+            background-color: #505050;
+        }
+
+        #progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #progress-bar {
+            width: 90%;
+            max-width: 600px;
+            height: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            background-color: #64dd17;
+            transition: width 0.5s ease;
+        }
+
+        #progress-steps {
+            margin: 20px;
+            color: #e0e0e0;
+            list-style-position: inside;
+            padding: 0;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        @media (max-width: 960px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+
+            #run-button {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            #progress-steps {
+                font-size: 14px;
+            }
+
+            #command-input {
+                font-size: 14px;
+            }
+
+            .command-input, .command-output {
+                font-size: 14px;
+                word-break: break-word;
+            }
+        }
+
+        #progress-steps li {
+            margin: 8px 0;
+            opacity: 0.7;
+        }
+
+        #progress-steps li.active {
+            opacity: 1;
+            color: #64dd17;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Online Dyna REPL</h1>
+        <div id="output-area">
+<div class="command-output">             _____   __     __  _   _
+            |  __ \  \ \   / / | \ | |     /\
+            | |  | |  \ \_/ /  |  \| |    /  \
+            | |  | |   \   /   | . ` |   / /\ \
+            | |__| |    | |    | |\  |  / ____ \
+            |_____/     |_|    |_| \_| /_/    \_\
+
+------------------------------------------------- /\
+\                                              / /  \
+ \                                            / /    \
+  \                                          / /      \
+   \                                        / /        \
+    \     Implemented by                   / /          \
+     \       <a href="https://matthewfl.com/phd" target="_blank">Matthew Francis-Landau</a>       / /            \
+      \                  (2020-2023)     / /              \
+       \                                / /                \
+        \                              / /                  \
+         \                            / /                    \
+          \                          / /                      \
+           \                        / /                        \
+            \                      / /                          \
+             \                    / /                            \
+              \                  / /                              \
+               \                / /                                \
+                \              / /         <a href="http://dyna.org" target="_blank">http://dyna.org</a>          \
+                 \            / /                                    \
+                  \          / /                                      \
+                   \        / /    <a href="https://github.com/argolab/dyna3" target="_blank">https://github.com/argolab/dyna3</a>    \
+                    \      / /                                          \
+                     \    / /                                            \
+                      \  / /                                              \
+                       \/ --------------------------------------------------
+
+REPL commands: quit, reset, run-agenda, clear-agenda
+
+Example:
+  a = 1.                         % define the term `a` with the value 1
+  a?                             % query the term `a`
+
+  fib(0) += 0.                   % define the fibonacci sequence
+  fib(1) += 1.
+  fib(N) += fib(N-1) for N > 1.
+  fib(N) += fib(N-2) for N > 1.
+
+  $memo(fib[N:$free]) = "unk".   % turn on memoization of the fib/1 terms
+
+  fib(10)?                       % query for the 10th fibonacci value
+</div>
+        </div>
+        <div id="input-container">
+            <div id="error-message"></div>
+            <textarea id="command-input" placeholder="Enter your command here..."></textarea>
+            <button id="run-button">Run</button>
+        </div>
+    </div>
+
+    <div id="progress-overlay">
+        <h2>Initializing Dyna Runtime</h2>
+        <div id="progress-bar">
+            <div id="progress-fill"></div>
+        </div>
+        <ol id="progress-steps">
+            <li class="active">Creating a Java Virtual Machine using WebAssembly powered by <a href="https://cheerpj.com/" target="_blank">Cheerpj</a></li>
+            <li>Loading <a href="https://clojure.org/" target="_blank">Clojure</a> runtime</li>
+            <li>Loading <a href="https://github.com/argolab/dyna3" target="_blank">Dyna</a> runtime</li>
+        </ol>
+    </div>
+
+    <script src="https://cjrtnc.leaningtech.com/3.1/cj3loader.js"></script>
+    <script>
+        const useDynaImplementation = true;
+        async function initRuntime() {
+            // must be called and awaited before isValidCommand and runCommand can be called.
+
+            // this function should be called immediately once the webpage is loaded.
+
+            // this function will take between 3-5 minutes to run.
+            // As such, when this function is running, there should be a progress bar that blocks the webpage
+            // the elements on the webpage should be disabled while this function is running.
+            // once this function has finished running, the UI should become usable.
+            if(!useDynaImplementation) {
+                await new Promise(r => setTimeout(r, 5000));
+            } else {
+                try {
+                    await cheerpjInit({
+                        version: 8,
+                        javaProperties: [
+                            "java.vm.specification.version=1.8",
+                            "dyna.debug=false",
+                            "dyna.trace_rexpr_construction=false",
+                            "dyna.debug_repl=false",
+                            "dyna.check_rexprs_args=false",
+                            "clojure.compiler.direct-linking=true",
+                        ]
+                    });
+                    const lib = await cheerpjRunLibrary("/app/dyna3-demo/dyna-standalone.jar");
+                    window.dynaInterface = await lib.dyna.WebDemoMain;
+                    await window.dynaInterface.load();
+                    await runCommand("1+1?");  // warm up the code
+                } catch (e) {
+                    console.error(e);
+                    const str = await e.toString()
+                    console.error(str);
+                    await e.printStackTrace();
+                    throw str;
+                }
+            }
+        }
+        async function isValidCommand(command) {
+            // check that the command is valid before using the runCommand.
+            // This will perform basic syntax checks on the command and make sure that the command is valid
+            // this will return a string that is an error message about what is wrong with the command.
+            // if nothing is wrong, then this will return the boolean value true.
+
+            // Commands are allowed to be multiple lines
+            // if the user presses the enter button in the input area, then the isValidCommand function should be used to check if the input
+            // is a command (the function returns true).  If the input is a valid command, then the input should be passed ot the runCommand function, and the input area should be cleared.
+            // the input and the resulting output of the runCommand function should be shown in the output area.
+
+            // the error messages returned by the isValidCommand function should only be shown to the user if the user explicitly clicks a "run" button in the UI
+            // ideally there should be some way that the error message is displayed "nicely" using some html element near the input rather than using something like an alert
+
+            if (!useDynaImplementation) {
+                if (command.length < 10) { // example condition to check
+                    // return an error message as a string if the command is not valid
+                    return "The command is too short";
+                } else {
+                    // return true indicating that this is a valid command and can be run.
+                    return true;
+                }
+            } else {
+                const result = await window.dynaInterface.validate(command);
+                if(result === null) {
+                    return true;
+                } else {
+                    return await Promise.resolve(result.toString());
+                }
+            }
+        }
+        async function runCommand(command) {
+            // called when want to evaluate a command.
+            // the argument should be the string.  The string can be multi-lined
+            // The result will be a string (with unicode for a terminal) with the result.
+            // The result can be multi-lined as well.
+
+            // The result should be added to the output area like a terminal.
+            if(command.trim() == "exit" || command.trim() == "quit") {
+                if(confirm("Are you sure you want to quit"))
+                    window.location = "/";
+                return "";
+            }
+            if (!useDynaImplementation) {
+                return "result of command\n\tcan contain multiple lines";
+            } else {
+                try {
+                    const result = await window.dynaInterface.run(command);
+                    return await Promise.resolve(result.toString());
+                } catch (e) {
+                    console.error(e);
+                    const str = await e.toString();
+                    console.error(str);
+                    await e.printStackTrace();
+                    return "ERROR: "+str;
+                }
+            }
+        }
+
+        // UI Implementation
+        const outputArea = document.getElementById('output-area');
+        const commandInput = document.getElementById('command-input');
+        const runButton = document.getElementById('run-button');
+        const errorMessage = document.getElementById('error-message');
+        const progressOverlay = document.getElementById('progress-overlay');
+        const progressFill = document.getElementById('progress-fill');
+
+        // Disable UI initially
+        commandInput.disabled = true;
+        runButton.disabled = true;
+
+        // Initialize runtime with progress bar
+        async function initialize() {
+            const startTime = Date.now();
+            const duration = 3 * 60 * 1000; // 3 minutes
+            const steps = document.querySelectorAll('#progress-steps li');
+            let currentStep = 0;
+
+            const updateProgress = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min((elapsed / duration) * 100, 100);
+                progressFill.style.width = `${progress}%`;
+
+                if (elapsed < duration) {
+                    // Update active step based on progress
+                    // the % are estimates of how long each task will take
+                    let newStep;
+                    if((elapsed / duration) < .05) {
+                        newStep = 0;
+                    } else if((elapsed / duration) < .25) {
+                        newStep = 1;
+                    } else {
+                        newStep = 2;
+                    }
+                    if (newStep !== currentStep && newStep < steps.length) {
+                        steps[currentStep]?.classList.remove('active');
+                        steps[newStep].classList.add('active');
+                        currentStep = newStep;
+                    }
+                    setTimeout(updateProgress, 200);
+                }
+            };
+
+            updateProgress();
+
+            try {
+                await initRuntime();
+                commandInput.disabled = false;
+                runButton.disabled = false;
+                console.log('Time to load:', (Date.now() - startTime)/1000);
+            } catch (error) {
+                console.error('Runtime initialization failed:', error);
+                appendToOutput('Runtime initialization failed:\n'+error);
+            }
+            progressOverlay.style.display = 'none';
+        }
+
+        // Add command to output area
+        function appendToOutput(command, isInput = false) {
+            const entry = document.createElement('div');
+            entry.className = 'command-entry';
+
+            const content = document.createElement('div');
+            content.className = isInput ? 'command-input' : 'command-output';
+            if (isInput) {
+                // For input commands, preserve newlines and add prompt to first line
+                const lines = command.split('\n');
+                content.textContent = '> ' + lines[0];
+                // Add remaining lines with proper indentation
+                for (let i = 1; i < lines.length; i++) {
+                    content.textContent += '\n  ' + lines[i];
+                }
+            } else {
+                content.textContent = command;
+            }
+
+            entry.appendChild(content);
+            outputArea.appendChild(entry);
+            outputArea.scrollTop = outputArea.scrollHeight;
+        }
+
+        // Handle command execution
+        async function handleCommand() {
+            const command = commandInput.value;
+            if (!command.trim()) return;
+
+            const validationResult = await isValidCommand(command);
+
+            if (validationResult === true) {
+                appendToOutput(command, true);
+                errorMessage.style.display = 'none';
+
+                try {
+                    const result = await runCommand(command);
+                    appendToOutput(result);
+                    commandInput.value = '';
+                } catch (error) {
+                    appendToOutput('Error: ' + error.message);
+                }
+            } else {
+                errorMessage.textContent = validationResult;
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Event Listeners
+        runButton.addEventListener('click', handleCommand);
+
+        commandInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const command = commandInput.value;
+                if (!command.trim()) return;
+
+                const validationResult = await isValidCommand(command);
+                if (validationResult === true) {
+                    handleCommand();
+                } else {
+                    // Insert a newline at the cursor position
+                    const start = commandInput.selectionStart;
+                    const end = commandInput.selectionEnd;
+                    commandInput.value =
+                        commandInput.value.substring(0, start) +
+                        '\n' +
+                        commandInput.value.substring(end);
+
+                    // Move cursor after the inserted newline
+                    commandInput.selectionStart =
+                    commandInput.selectionEnd = start + 1;
+
+                    // Trigger the auto-resize
+                    commandInput.dispatchEvent(new Event('input'));
+                }
+            }
+        });
+
+        // Auto-resize textarea
+        commandInput.addEventListener('input', () => {
+            commandInput.style.height = 'auto';
+            commandInput.style.height = Math.min(commandInput.scrollHeight, 200) + 'px';
+        });
+
+        // Start initialization
+        initialize();
+    </script>
+</body>
+</html>
