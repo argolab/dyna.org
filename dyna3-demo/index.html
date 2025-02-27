@@ -56,6 +56,24 @@
             white-space: pre-wrap;
         }
 
+        /* ANSI Colors */
+        .ansi-black { color: #4d4d4d; }         /* Lighter shade of black */
+        .ansi-red { color: #ff5555; }           /* Brighter red */
+        .ansi-green { color: #50fa7b; }         /* Brighter green */
+        .ansi-yellow { color: #f1fa8c; }        /* Softer yellow */
+        .ansi-blue { color: #6272a4; }          /* Muted but visible blue */
+        .ansi-magenta { color: #ff79c6; }       /* Brighter magenta */
+        .ansi-cyan { color: #8be9fd; }          /* Brighter cyan */
+        .ansi-white { color: #f8f8f2; }         /* Slightly warmer white */
+        .ansi-bright-black { color: #6272a4; }  /* Bluish gray */
+        .ansi-bright-red { color: #ff6e6e; }    /* Lighter bright red */
+        .ansi-bright-green { color: #69ff94; }  /* Lighter bright green */
+        .ansi-bright-yellow { color: #ffffa5; } /* Lighter bright yellow */
+        .ansi-bright-blue { color: #d6acff; }   /* Lighter bright blue */
+        .ansi-bright-magenta { color: #ff92df; }/* Lighter bright magenta */
+        .ansi-bright-cyan { color: #a4ffff; }   /* Lighter bright cyan */
+        .ansi-bright-white { color: #ffffff; }  /* Pure white */
+
         #input-container {
             flex: 3;
             position: relative;
@@ -374,6 +392,70 @@ Example:
         const progressOverlay = document.getElementById('progress-overlay');
         const progressFill = document.getElementById('progress-fill');
 
+        // Function to parse ANSI color codes and convert to HTML
+        function parseAnsiCodes(text) {
+            const colorMap = {
+                '30': 'ansi-black',
+                '31': 'ansi-red',
+                '32': 'ansi-green',
+                '33': 'ansi-yellow',
+                '34': 'ansi-blue',
+                '35': 'ansi-magenta',
+                '36': 'ansi-cyan',
+                '37': 'ansi-white',
+                '90': 'ansi-bright-black',
+                '91': 'ansi-bright-red',
+                '92': 'ansi-bright-green',
+                '93': 'ansi-bright-yellow',
+                '94': 'ansi-bright-blue',
+                '95': 'ansi-bright-magenta',
+                '96': 'ansi-bright-cyan',
+                '97': 'ansi-bright-white'
+            };
+
+            let result = '';
+            let currentSpan = null;
+            let i = 0;
+
+            while (i < text.length) {
+                if (text[i] === '\x1b' && text[i + 1] === '[') {
+                    // Close any open span
+                    if (currentSpan) {
+                        result += '</span>';
+                        currentSpan = null;
+                    }
+
+                    // Find the end of the ANSI sequence
+                    let j = i + 2;
+                    while (j < text.length && text[j] !== 'm') j++;
+
+                    // Extract the color code
+                    const code = text.substring(i + 2, j);
+                    
+                    // Handle color codes
+                    if (colorMap[code]) {
+                        result += `<span class="${colorMap[code]}">`;
+                        currentSpan = colorMap[code];
+                    } else if (code === '0' || code === '') {
+                        // Reset
+                        currentSpan = null;
+                    }
+
+                    i = j + 1;
+                } else {
+                    result += text[i];
+                    i++;
+                }
+            }
+
+            // Close any remaining open span
+            if (currentSpan) {
+                result += '</span>';
+            }
+
+            return result;
+        }
+
         // Disable UI initially
         commandInput.disabled = true;
         runButton.disabled = true;
@@ -431,6 +513,7 @@ Example:
 
             const content = document.createElement('div');
             content.className = isInput ? 'command-input' : 'command-output';
+            
             if (isInput) {
                 // For input commands, preserve newlines and add prompt to first line
                 const lines = command.split('\n');
@@ -440,7 +523,8 @@ Example:
                     content.textContent += '\n  ' + lines[i];
                 }
             } else {
-                content.textContent = command;
+                // Parse ANSI codes for output
+                content.innerHTML = parseAnsiCodes(command);
             }
 
             entry.appendChild(content);
