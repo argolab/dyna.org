@@ -243,8 +243,9 @@ Example:
   fib(N) += fib(N-2) for N > 1.
 
   $memo(fib[N:$free]) = "unk".   % turn on memoization of the fib/1 terms
+  $priority(fib[N]) = -N.        % process smaller fib/1 values first
 
-  fib(10)?                       % query for the 10th fibonacci value
+  fib(100)?                      % query for the 100th fibonacci value
 </div>
         </div>
         <div id="input-container">
